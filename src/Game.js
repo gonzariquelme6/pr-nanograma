@@ -11,6 +11,8 @@ class Game extends React.Component {
     super(props);
     this.state = {
       grid: null,
+      rowClues: null,
+      colClues: null,
       waiting: false,
       current_mode: '#'
     };
@@ -24,7 +26,9 @@ class Game extends React.Component {
     this.pengine.query(queryS, (success, response) => {
       if (success) {
         this.setState({
-          grid: response['Grilla']
+          grid: response['Grilla'],
+          rowClues: response['PistasFilas'],
+          colClues: response['PistasColumns'],
         });
       }
     });
@@ -70,8 +74,11 @@ class Game extends React.Component {
     const statusText = '';
     return (
       <div className="game">
+        <div className="pistasCol"></div>
         <Board
           grid={this.state.grid}
+          rowClues={this.state.rowClues}
+          colClues={this.state.colClues}
           onClick={(i, j) => this.handleClick(i,j)}
         />
         <div>
