@@ -4,8 +4,7 @@
 	]).
 
 :-use_module(library(lists)).
-
-
+:-use_module(library(clpfd)).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % replace(?X, +XIndex, +Y, +Xs, -XsY)
@@ -18,6 +17,32 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
     XIndex > 0,
     XIndexS is XIndex - 1,
     replace(X, XIndexS, Y, Xs, XsY).
+
+
+/*Check(Pista,Fila,Satisface)
+ * Caso base
+ *	La pista es una
+ 		si la pista es 0 entonces
+        	compruebo que no hayan mas "#".
+        si la pista no es 0 entonces
+        	busco el primer "#" y decremento en 1 hasta llegar a cero.        
+ */
+check([0],[],1).
+check([X],[],0):-X\=0.
+check([0],[X|Xs],1):- X\="#", not(member("#",Xs)).
+check([0],[X|Xs],0):- X\="#", member("#",Xs).
+check([0],[X|_Xs],0):- X="#".
+check([0|Ps],[X|Xs],Satif):-X\="#",check(Ps,Xs,Satif).
+check([0|_Ps],[X|_Xs],0):-X="#".
+check([P|Ps],[X|Xs],Satif):-X\="#",check([P|Ps],Xs,Satif).
+check([P|Ps],[X|Xs],Satif):-X="#",Pdec is P-1,check([Pdec|Ps],Xs,Satif).
+
+obtener(0,[X|_Xs],X).
+obtener(RowN,[_X|Xs],Pista):-
+    RowN>0,
+    Aux is RowN-1,
+    obtener(Aux,Xs,Pista).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -38,4 +63,13 @@ put(Contenido, [RowN, ColN], _PistasFilas, _PistasColumnas, Grilla, NewGrilla, 0
 	(replace(Cell, ColN, _, Row, NewRow),
 	Cell == Contenido 
 		;
-	replace(_Cell, ColN, Contenido, Row, NewRow)).
+	replace(_Cell, ColN, Contenido, Row, NewRow)),
+    
+    obtener(RowN,PistasFilas,PistaF),
+    obtener(RowN,NewGrilla,Fila),
+    check(PistaF,Fila,FilaSat),
+    
+    transpose(NewGrilla,Columns),
+	obtener(ColN,PistasColumnas,PistaC),
+	obtener(ColN,Columns,Columna),
+	check(PistaC,Columna,ColSat).

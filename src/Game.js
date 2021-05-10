@@ -14,7 +14,8 @@ class Game extends React.Component {
       rowClues: null,
       colClues: null,
       waiting: false,
-      current_mode: '#'
+      current_mode: '#',
+      current_state:"Partida en curso.",
     };
     this.handleClick = this.handleClick.bind(this);
     this.handlePengineCreate = this.handlePengineCreate.bind(this);
@@ -81,12 +82,14 @@ class Game extends React.Component {
           colClues={this.state.colClues}
           onClick={(i, j) => this.handleClick(i,j)}
         />
+
         <div>
           Modo actual: <Mode value={this.state.current_mode} onClick={() => this.modeClick()} />
         </div>
 
         <div className="gameInfo">
           {statusText}
+          {this.state.current_state}
         </div>
       </div>
     );
