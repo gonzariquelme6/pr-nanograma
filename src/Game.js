@@ -15,7 +15,9 @@ class Game extends React.Component {
       colClues: null,
       waiting: false,
       current_mode: '#',
-      current_state:"Partida en curso.",
+      filasCorrectas:[],
+      colsCorrectas:[],
+      statusText:"Partida en curso.",
     };
     this.handleClick = this.handleClick.bind(this);
     this.handlePengineCreate = this.handlePengineCreate.bind(this);
@@ -26,11 +28,21 @@ class Game extends React.Component {
     const queryS = 'init(PistasFilas, PistasColumns, Grilla)';
     this.pengine.query(queryS, (success, response) => {
       if (success) {
+        console.log("Created");
         this.setState({
           grid: response['Grilla'],
           rowClues: response['PistasFilas'],
           colClues: response['PistasColumns'],
         });
+
+        this.state.grid.forEach( ()=> {
+          this.state.filasCorrectas.push(0);  
+        });
+
+        this.state.grid[0].forEach( ()=> {
+          this.state.colsCorrectas.push(0);  
+        });
+
       }
     });
   }
@@ -40,11 +52,14 @@ class Game extends React.Component {
     if (this.state.waiting) {
       return;
     }
+
+    const squaresS = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); // Remove quotes for variables.
+    const filas = JSON.stringify(this.state.rowClues);
+    const columnas = JSON.stringify(this.state.colClues);
+    
     // Build Prolog query to make the move, which will look as follows:
     // put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
-    const squaresS = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); // Remove quotes for variables.
-    const queryS = 'put("' + this.state.current_mode +'", [' + i + ',' + j + ']' 
-    + ', [], [],' + squaresS + ', GrillaRes, FilaSat, ColSat)';
+    const queryS = `put("${this.state.current_mode}", [${i}, ${j}], ${filas}, ${columnas}, ${squaresS}, GrillaRes, FilaSat, ColSat)`;
     this.setState({
       waiting: true
     });
@@ -52,9 +67,24 @@ class Game extends React.Component {
       if (success) {
         this.setState({
           grid: response['GrillaRes'],
-          waiting: false
+          filaCorrecta: response['FilaSat'],
+          colCorrecta: response['ColSat'],
+          waiting: false,
         });
+        this.state.filasCorrectas[i] = response['FilaSat'];
+        this.state.colsCorrectas[i] = response['ColSat'];
+        console.log(this.state.filasCorrectas);
+
+        let todasFilas = this.state.filasCorrectas.every(elem=> elem===1);
+        let todasCols = this.state.colsCorrectas.every(elem=> elem===1);
+
+        if(todasFilas&&todasCols){
+          this.setState({
+            statusText: "Ganaste!"
+          })
+        }
       } else {
+        console.log("fail");
         this.setState({
           waiting: false
         });
@@ -72,7 +102,6 @@ class Game extends React.Component {
     if (this.state.grid === null) {
       return null;
     }
-    const statusText = '';
     return (
       <div className="game">
         <div className="pistasCol"></div>
@@ -88,8 +117,7 @@ class Game extends React.Component {
         </div>
 
         <div className="gameInfo">
-          {statusText}
-          {this.state.current_state}
+          {this.state.statusText}
         </div>
       </div>
     );
