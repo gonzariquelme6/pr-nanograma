@@ -1,17 +1,31 @@
 body {
-  font: 14px "Century Gothic", Futura, sans-serif;
+  font: 20px "Century Gothic", Futura, sans-serif;
   margin: 20px;
+  background:rgb(29,53,87);
+  color:white;
+  font-weight:bold;
 }
 
+.game{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction:column;
+}
 .square {
-  background: #fff;
+  background: rgb(242,251,239);
   border: 1px solid #999;
   font-size: 24px;
   font-weight: bold;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
+  color:rgb(79,0,70);
   text-align: center;
+}
+
+.squarePintado{ 
+  background: rgb(79,0,70);
 }
 
 .square:focus {
@@ -43,13 +57,13 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #b9d6e0;
+  background: rgb(61,0,8);
   border-radius: 8px;
   margin: 5px;
 }
 
 .clueSatisfies{
-  background: rgb(99, 230, 149);
+  background: rgb(188,0,221);
 }
 .clue div {
   margin: 2px
@@ -59,15 +73,20 @@ body {
   flex-direction: column;
 }
 
-.game {
-  display: flex;
-  flex-direction: column;
-}
-
 .gameInfo {
   margin-left: 0px;
 }
 
 .mode{
+  margin-top:20px;
+  height: 30px;
+  width: 30px;
   margin-left: 50px;
+  color: rgb(79,0,70);
+  font-size:24px;
+  font-weight:bold;
+}
+
+.pintar{
+  background: rgb(79,0,70);
 }

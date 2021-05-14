@@ -1,6 +1,7 @@
 :- module(proylcc,
 	[  
-		put/8
+		put/8,
+		checkInit/5
 	]).
 
 :-use_module(library(lists)).
@@ -32,6 +33,7 @@ check([],[X|_Xs],0):-X=="#".
 check([],[X|Xs],0):- X\=="#", memberchk("#",Xs).
 %si se vacian las dos listas devuelvo 1
 check([],[],1).
+check([_P|_Ps],[],0).
 %CR1
 %si tengo pistas y la lista no empieza con #, avanzo en la lista
 check([P|Ps],[X|Xs],Res):- X\=="#", check([P|Ps],Xs,Res).
@@ -62,3 +64,17 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Fil
 	checkearFila(RowN,PistasFilas,NewGrilla,FilaSat),
     transpose(NewGrilla,Columns),
 	checkearFila(ColN,PistasColumnas,Columns,ColSat).
+
+checkInitAux([],[],[]).
+checkInitAux([X|Xs],[Y|Ys],[R|Rs]):-
+	check(X,Y,R),
+	checkInitAux(Xs,Ys,Rs).
+
+%
+% checkInit(+PistasFilas, +PistasColumnas, +Grilla, -FilasSat, -ColsSat.
+%
+checkInit(PistasFilas, PistasColumnas,Grilla, FilasSat,ColsSat):-
+	checkInitAux(PistasFilas,Grilla,FilasSat),
+	transpose(Grilla,GrillaCols),
+	checkInitAux(PistasColumnas,GrillaCols,ColsSat).
+

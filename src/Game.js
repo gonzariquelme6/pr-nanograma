@@ -14,6 +14,7 @@ class Game extends React.Component {
       rowClues: null,
       colClues: null,
       waiting: false,
+      won:false,
       current_mode: '#',
       filasCorrectas:[],
       colsCorrectas:[],
@@ -33,22 +34,37 @@ class Game extends React.Component {
           rowClues: response['PistasFilas'],
           colClues: response['PistasColumns'],
         });
-
-        this.state.grid.forEach( ()=> {
-          this.state.filasCorrectas.push(0);  
-        });
-
-        this.state.grid[0].forEach( ()=> {
-          this.state.colsCorrectas.push(0);  
-        });
-
+      this.checkInicio();
       }
+    });
+  }
+
+  checkInicio(){
+    console.log("CHECK INICIO");
+    const pistasf = JSON.stringify(this.state.rowClues);
+    const pistasc = JSON.stringify(this.state.colClues);
+    const grilla = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); 
+
+    console.log(pistasf);
+    console.log(pistasc);
+    console.log(grilla);
+    const queryS = `checkInit("${pistasf}", ${pistasc}, ${grilla}, FilasSat, ColsSat)`;
+    this.pengine.query(queryS,(success, response) =>{
+      if (success){
+        this.setState({
+          filasCorrectas: response['FilasSat'],
+          colsCorrectas: response['ColsSat']
+        })
+        console.log(this.state.filasCorrectas);
+      }else{
+        console.log("FAILLL");
+      }  
     });
   }
 
   handleClick(i, j) {
     // No action on click if we are waiting.
-    if (this.state.waiting) {
+    if (this.state.waiting || this.state.won) {
       return;
     }
 
@@ -82,7 +98,8 @@ class Game extends React.Component {
 
         if(todasFilas&&todasCols){
           this.setState({
-            statusText: "Ganaste!"
+            statusText: "Ganaste!",
+            won:true
           })
         }
       } else {

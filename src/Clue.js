@@ -6,7 +6,7 @@ class Clue extends React.Component {
         const satisfies = this.props.satisfies;
         
         return (
-            <div className={"clue "+ (satisfies==1 ? "clueSatisfies":"")} >
+            <div className={"clue "+ (satisfies===1 ? "clueSatisfies":"")} >
                 {clue.map((num, i) =>
                     <div key={i}>
                         {num}
