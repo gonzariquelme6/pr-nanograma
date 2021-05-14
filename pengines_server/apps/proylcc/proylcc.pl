@@ -20,34 +20,40 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 
 
 verSubcadena(0,[],[]).
-verSubcadena(0,[X|Xs],Xs):- X\='#'.
+verSubcadena(0,[X|Xs],Xs):- X\=="#".
 verSubcadena(Cant,[X|Xs],XRes):- 
-	X='#',
+	X=="#",
 	CantAux is Cant-1,
 	verSubcadena(CantAux,Xs,XRes).
 %CB
+%si no tengo pistas y la lista sigue con un # devuelvo 0
+check([],[X|_Xs],0):-X=="#".
+%si no tengo pistas y la lista sigue, y sigue habiendo # devuelvo 0
+check([],[X|Xs],0):- X\=="#", memberchk("#",Xs).
+%si se vacian las dos listas devuelvo 1
 check([],[],1).
-check([],[X|_Xs],0):-X='#'.
-check([],[X|Xs],0):- X\='#', member('#',Xs).
 %CR1
-check([P|Ps],[X|Xs],Res):- X\='#', check([P|Ps],Xs,Res).
+%si tengo pistas y la lista no empieza con #, avanzo en la lista
+check([P|Ps],[X|Xs],Res):- X\=="#", check([P|Ps],Xs,Res).
 %CR2
-check([P|Ps],[X|Xs],Res):- X='#',
+%si tengo pistas y la lista empieza con # me fijo que la cadena de # consecutivas sea igual a la pista
+check([P|Ps],[X|Xs],Res):- X=="#",
 	Cant is P-1,
 	verSubcadena(Cant,Xs,XRes),
 	check(Ps,XRes,Res).
-check([_P|_Ps],[X|_Xs],0):- X='#'.
+%sino devuelvo 0.
+check([_P|_Ps],[X|_Xs],0):- X=="#".
 
 checkearFila(RowN,Pistas,Filas,Res):-
 	nth0(RowN,Pistas,PistaF),
-	nth0(RowN,Filas,Fila).
-	%check(PistaF,Fila,Res).
+	nth0(RowN,Filas,Fila),
+	check(PistaF,Fila,Res).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % put(+Contenido, +Pos, +PistasFilas, +PistasColumnas, +Grilla, -GrillaRes, -FilaSat, -ColSat).
 %
 
-put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, 0, 0):-
+put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, FilaSat, ColSat):-
 	replace(Row, RowN, NewRow, Grilla, NewGrilla),
 	(replace(Cell, ColN, "_" , Row, NewRow),
 	Cell == Contenido;

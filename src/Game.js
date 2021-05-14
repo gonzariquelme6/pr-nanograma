@@ -28,7 +28,6 @@ class Game extends React.Component {
     const queryS = 'init(PistasFilas, PistasColumns, Grilla)';
     this.pengine.query(queryS, (success, response) => {
       if (success) {
-        console.log("Created");
         this.setState({
           grid: response['Grilla'],
           rowClues: response['PistasFilas'],
@@ -65,15 +64,18 @@ class Game extends React.Component {
     });
     this.pengine.query(queryS, (success, response) => {
       if (success) {
+        let auxFilas = this.state.filasCorrectas;
+        auxFilas[i] = response['FilaSat'];
+        let auxCols = this.state.colsCorrectas;
+        auxCols[j] = response['ColSat'];
         this.setState({
           grid: response['GrillaRes'],
           filaCorrecta: response['FilaSat'],
           colCorrecta: response['ColSat'],
           waiting: false,
+          filasCorrectas:auxFilas,
+          colsCorrectas:auxCols
         });
-        this.state.filasCorrectas[i] = response['FilaSat'];
-        this.state.colsCorrectas[i] = response['ColSat'];
-        console.log(this.state.filasCorrectas);
 
         let todasFilas = this.state.filasCorrectas.every(elem=> elem===1);
         let todasCols = this.state.colsCorrectas.every(elem=> elem===1);
@@ -110,6 +112,8 @@ class Game extends React.Component {
           rowClues={this.state.rowClues}
           colClues={this.state.colClues}
           onClick={(i, j) => this.handleClick(i,j)}
+          RowSat = {this.state.filasCorrectas}
+          ColSat = {this.state.colsCorrectas}
         />
 
         <div>
