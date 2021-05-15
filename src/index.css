@@ -1,7 +1,7 @@
 body {
   font: 20px "Century Gothic", Futura, sans-serif;
   margin: 20px;
-  background:rgb(29,53,87);
+  background:rgb(231, 153, 255);
   color:white;
   font-weight:bold;
 }
@@ -92,8 +92,9 @@ body {
 }
 
 .restart{
-  width:55px;
-  height:55px;
-  background-color: rgb(29,53,87);
+  width:50px;
+  height:53px;
+  background-color: rgb(231, 153, 255);
   background-image: url(/src/restart.png);
+  border: 0px;
 }
