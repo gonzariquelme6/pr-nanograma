@@ -90,3 +90,10 @@ body {
 .pintar{
   background: rgb(79,0,70);
 }
+
+.restart{
+  width:55px;
+  height:55px;
+  background-color: rgb(29,53,87);
+  background-image: url(/src/restart.png);
+}

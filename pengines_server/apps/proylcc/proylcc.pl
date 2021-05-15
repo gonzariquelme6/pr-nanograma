@@ -33,7 +33,6 @@ check([],[X|_Xs],0):-X=="#".
 check([],[X|Xs],0):- X\=="#", memberchk("#",Xs).
 %si se vacian las dos listas devuelvo 1
 check([],[],1).
-check([_P|_Ps],[],0).
 %CR1
 %si tengo pistas y la lista no empieza con #, avanzo en la lista
 check([P|Ps],[X|Xs],Res):- X\=="#", check([P|Ps],Xs,Res).
@@ -65,9 +64,13 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Fil
     transpose(NewGrilla,Columns),
 	checkearFila(ColN,PistasColumnas,Columns,ColSat).
 
+checkVacio([_P|_Ps],[],0).
+checkVacio([P|Ps],[X|Xs],R):- X\=="#", checkVacio([P|Ps],Xs,R).
+
+
 checkInitAux([],[],[]).
 checkInitAux([X|Xs],[Y|Ys],[R|Rs]):-
-	check(X,Y,R),
+	(checkVacio(X,Y,R), R==0 ; check(X,Y,R)),
 	checkInitAux(Xs,Ys,Rs).
 
 %

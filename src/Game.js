@@ -2,6 +2,7 @@ import React from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
 import Mode from './Mode';
+import Restart from './Restart';
 
 class Game extends React.Component {
 
@@ -18,7 +19,7 @@ class Game extends React.Component {
       current_mode: '#',
       filasCorrectas:[],
       colsCorrectas:[],
-      statusText:"Partida en curso.",
+      statusText:null,
     };
     this.handleClick = this.handleClick.bind(this);
     this.handlePengineCreate = this.handlePengineCreate.bind(this);
@@ -33,6 +34,8 @@ class Game extends React.Component {
           grid: response['Grilla'],
           rowClues: response['PistasFilas'],
           colClues: response['PistasColumns'],
+          won:false,
+          statusText:"Partida en curso."
         });
       this.checkInicio();
       }
@@ -45,9 +48,6 @@ class Game extends React.Component {
     const pistasc = JSON.stringify(this.state.colClues);
     const grilla = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); 
 
-    console.log(pistasf);
-    console.log(pistasc);
-    console.log(grilla);
     const queryS = `checkInit("${pistasf}", ${pistasc}, ${grilla}, FilasSat, ColsSat)`;
     this.pengine.query(queryS,(success, response) =>{
       if (success){
@@ -55,7 +55,6 @@ class Game extends React.Component {
           filasCorrectas: response['FilasSat'],
           colsCorrectas: response['ColsSat']
         })
-        console.log(this.state.filasCorrectas);
       }else{
         console.log("FAILLL");
       }  
@@ -98,8 +97,8 @@ class Game extends React.Component {
 
         if(todasFilas&&todasCols){
           this.setState({
-            statusText: "Ganaste!",
-            won:true
+            won:true,
+            statusText: "Ganaste!!"
           })
         }
       } else {
@@ -139,6 +138,10 @@ class Game extends React.Component {
 
         <div className="gameInfo">
           {this.state.statusText}
+        </div>
+
+        <div>
+          <Restart onClick={() => this.handlePengineCreate()} />
         </div>
       </div>
     );
