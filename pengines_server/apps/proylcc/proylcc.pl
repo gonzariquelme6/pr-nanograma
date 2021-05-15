@@ -77,7 +77,7 @@ checkInitAux([X|Xs],[Y|Ys],[R|Rs]):-
 % checkInit(+PistasFilas, +PistasColumnas, +Grilla, -FilasSat, -ColsSat.
 %
 checkInit(PistasFilas, PistasColumnas,Grilla, FilasSat,ColsSat):-
-	checkInitAux(PistasFilas,Grilla,FilasSat),
+	%checkInitAux(PistasFilas,Grilla,FilasSat),
 	transpose(Grilla,GrillaCols),
 	checkInitAux(PistasColumnas,GrillaCols,ColsSat).
 
