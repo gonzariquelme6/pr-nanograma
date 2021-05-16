@@ -1,7 +1,7 @@
 :- module(proylcc,
 	[  
 		put/8,
-		checkInit/5
+		check_init/5
 	]).
 
 :-use_module(library(lists)).
@@ -20,12 +20,13 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
     replace(X, XIndexS, Y, Xs, XsY).
 
 
-verSubcadena(0,[],[]).
-verSubcadena(0,[X|Xs],Xs):- X\=="#".
-verSubcadena(Cant,[X|Xs],XRes):- 
+ver_subcadena(0,[],[]).
+ver_subcadena(0,[X|Xs],Xs):- X\=="#".
+ver_subcadena(Cant,[X|Xs],XRes):- 
 	X=="#",
 	CantAux is Cant-1,
-	verSubcadena(CantAux,Xs,XRes).
+	ver_subcadena(CantAux,Xs,XRes).
+
 %CB
 %si no tengo pistas y la lista sigue con un # devuelvo 0
 check([],[X|_Xs],0):-X=="#".
@@ -40,15 +41,15 @@ check([P|Ps],[X|Xs],Res):- X\=="#", check([P|Ps],Xs,Res).
 %si tengo pistas y la lista empieza con # me fijo que la cadena de # consecutivas sea igual a la pista
 check([P|Ps],[X|Xs],Res):- X=="#",
 	Cant is P-1,
-	verSubcadena(Cant,Xs,XRes),
+	ver_subcadena(Cant,Xs,XRes),
 	check(Ps,XRes,Res).
 %sino devuelvo 0.
 check([_P|_Ps],[X|_Xs],0):- X=="#".
 
-checkearFila(RowN,Pistas,Filas,Res):-
-	nth0(RowN,Pistas,PistaF),
-	nth0(RowN,Filas,Fila),
-	check(PistaF,Fila,Res).
+satisfies(XIndex,Pistas,Grilla,Res):-
+	nth0(XIndex,Pistas,PistaX),
+	nth0(XIndex,Grilla,ListaX),
+	check(PistaX,ListaX,Res).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % put(+Contenido, +Pos, +PistasFilas, +PistasColumnas, +Grilla, -GrillaRes, -FilaSat, -ColSat).
@@ -60,24 +61,25 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Fil
 	Cell == Contenido;
 	replace(_Cell, ColN, Contenido, Row, NewRow)),
     
-	checkearFila(RowN,PistasFilas,NewGrilla,FilaSat),
+	satisfies(RowN,PistasFilas,NewGrilla,FilaSat),
     transpose(NewGrilla,Columns),
-	checkearFila(ColN,PistasColumnas,Columns,ColSat).
+	satisfies(ColN,PistasColumnas,Columns,ColSat).
 
-checkVacio([_P|_Ps],[],0).
-checkVacio([P|Ps],[X|Xs],R):- X\=="#", checkVacio([P|Ps],Xs,R).
+check_vacio([],0).
+check_vacio([X|_Xs],1):- X=="#".
+check_vacio([X|Xs],R):- X\=="#", check_vacio(Xs,R).
 
 
-checkInitAux([],[],[]).
-checkInitAux([X|Xs],[Y|Ys],[R|Rs]):-
-	(checkVacio(X,Y,R), R==0 ; check(X,Y,R)),
-	checkInitAux(Xs,Ys,Rs).
+check_init_aux([],[],[]).
+check_init_aux([X|Xs],[Y|Ys],[R|Rs]):-
+	(check_vacio(Y,R), R==0 ; check(X,Y,R)),
+	check_init_aux(Xs,Ys,Rs).
 
 %
 % checkInit(+PistasFilas, +PistasColumnas, +Grilla, -FilasSat, -ColsSat.
 %
-checkInit(PistasFilas, PistasColumnas,Grilla, FilasSat,ColsSat):-
-	%checkInitAux(PistasFilas,Grilla,FilasSat),
+check_init(PistasFilas, PistasColumnas,Grilla, FilasSat,ColsSat):-
+	check_init_aux(PistasFilas,Grilla,FilasSat),
 	transpose(Grilla,GrillaCols),
-	checkInitAux(PistasColumnas,GrillaCols,ColsSat).
+	check_init_aux(PistasColumnas,GrillaCols,ColsSat).
 
