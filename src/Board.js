@@ -7,9 +7,11 @@ class Board extends React.Component {
         const numOfRows = this.props.grid.length;
         const numOfCols = this.props.grid[0].length;
 
+        //obtengo las listas de pistas de las filas y de las columnas del padre
         const rowClues = this.props.rowClues;
         const colClues = this.props.colClues;
 
+        //obtengo la lista de filas y columnas satisfechas del padre
         const filaSat = this.props.rowSat;
         const colSat = this.props.colSat;
 
@@ -31,6 +33,7 @@ class Board extends React.Component {
                 >
                     <div>{/* top-left corner square */}</div>
                     {colClues.map((clue, i) =>
+                        //creo las pistas de las columnas y les paso si estan satisfechas
                         <Clue clue={clue} key={i} satisfies={colSat[i]}/>
                     )}
                 </div>
@@ -44,6 +47,7 @@ class Board extends React.Component {
                         }}
                     >
                         {rowClues.map((clue, i) =>
+                            //creo las pistas de las columnas y les paso si estan satisfechas
                             <Clue clue={clue} key={i} satisfies={filaSat[i]}/>
                         )}
                     </div>
