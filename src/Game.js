@@ -27,6 +27,7 @@ class Game extends React.Component {
   }
 
   handlePengineCreate() {
+    //llamamos a init de prolog y con la respuestas actualizamos el estado del componente
     const queryS = 'init(PistasFilas, PistasColumns, Grilla)';
     this.pengine.query(queryS, (success, response) => {
       if (success) {
@@ -37,32 +38,32 @@ class Game extends React.Component {
           won:false,
           statusText:"Partida en curso."
         });
+      //llamamos al metodo auxiliar checkInicio que sirve para verificar si las celdas pintadas iniciales verifican alguna pista
       this.checkInicio();
       }
     });
   }
 
   checkInicio(){
-    console.log("CHECK INICIO");
     const pistasf = JSON.stringify(this.state.rowClues);
     const pistasc = JSON.stringify(this.state.colClues);
     const grilla = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); 
 
-    const queryS = `checkInit("${pistasf}", ${pistasc}, ${grilla}, FilasSat, ColsSat)`;
+    //llamamos al metodo check_init de prolog con mis pistas actuales y mi grilla actual, justo despues de haberlas inicializado
+    const queryS = `check_init(${pistasf}, ${pistasc}, ${grilla}, FilasSat, ColsSat)`;
+    //y usamos la respuesta para inicializar las listas filasCorrectas y colsCorrectas
     this.pengine.query(queryS,(success, response) =>{
       if (success){
         this.setState({
           filasCorrectas: response['FilasSat'],
           colsCorrectas: response['ColsSat']
         })
-      }else{
-        console.log("FAILLL");
       }  
     });
   }
 
   handleClick(i, j) {
-    // No action on click if we are waiting.
+    // Si esta esperando, o el jugador gano y no clickeo en reiniciar juego no hago nada.
     if (this.state.waiting || this.state.won) {
       return;
     }
@@ -71,27 +72,34 @@ class Game extends React.Component {
     const filas = JSON.stringify(this.state.rowClues);
     const columnas = JSON.stringify(this.state.colClues);
     
-    // Build Prolog query to make the move, which will look as follows:
-    // put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
+    //llamamos al metodo put de prolog y usamos su respuesta para actualizar las pistas correctas
     const queryS = `put("${this.state.current_mode}", [${i}, ${j}], ${filas}, ${columnas}, ${squaresS}, GrillaRes, FilaSat, ColSat)`;
+    
     this.setState({
       waiting: true
     });
+    
     this.pengine.query(queryS, (success, response) => {
+      //copiamos los arreglos actuales filasCorrectas y colsCorrectas a variables auxiliares
+
+      let auxFilas = this.state.filasCorrectas.slice();
+      let auxCols = this.state.colsCorrectas.slice();
       if (success) {
-        let auxFilas = this.state.filasCorrectas;
+        //usamos la respuesta de prolog para actualizar los arreglos auxiliares
         auxFilas[i] = response['FilaSat'];
-        let auxCols = this.state.colsCorrectas;
         auxCols[j] = response['ColSat'];
+        
         this.setState({
+          //uso la respuesta de prolog para actualizar el estado actual de la grilla y reemplazo los arreglos
+          //actuales de filasCorrectas y colsCorrectas por los arreglos auxiliares que ya modifique
           grid: response['GrillaRes'],
-          filaCorrecta: response['FilaSat'],
-          colCorrecta: response['ColSat'],
           waiting: false,
           filasCorrectas:auxFilas,
           colsCorrectas:auxCols
         });
 
+        //control por React de que ej jugador gano
+        //si todas las filas y todas las columnas son correctas gano el juego
         let todasFilas = this.state.filasCorrectas.every(elem=> elem===1);
         let todasCols = this.state.colsCorrectas.every(elem=> elem===1);
 
@@ -101,14 +109,15 @@ class Game extends React.Component {
             statusText: "Ganaste!!"
           })
         }
-      } else {
-        console.log("fail");
+      }else {
         this.setState({
           waiting: false
         });
       }
     });
   }
+
+  //funcion onClick para el componente Mode que alterna entre los 2 modos posibles (pintar o poner X)
   modeClick(){
     if(this.state.current_mode==='#'){
       this.setState({current_mode:'X'});
@@ -116,6 +125,8 @@ class Game extends React.Component {
       this.setState({current_mode:'#'});
     }
   }
+
+
   render() {
     if (this.state.grid === null) {
       return null;
@@ -128,19 +139,19 @@ class Game extends React.Component {
           rowClues={this.state.rowClues}
           colClues={this.state.colClues}
           onClick={(i, j) => this.handleClick(i,j)}
-          RowSat = {this.state.filasCorrectas}
-          ColSat = {this.state.colsCorrectas}
+          rowSat = {this.state.filasCorrectas}
+          colSat = {this.state.colsCorrectas}
         />
 
-        <div>
+        <div className="div modo">
           Modo actual: <Mode value={this.state.current_mode} onClick={() => this.modeClick()} />
         </div>
 
-        <div className="gameInfo">
+        <div className="div">
           {this.state.statusText}
         </div>
 
-        <div>
+        <div className="div">
           <Restart onClick={() => this.handlePengineCreate()} />
         </div>
       </div>

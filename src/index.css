@@ -85,6 +85,7 @@ body {
   color: rgb(79,0,70);
   font-size:24px;
   font-weight:bold;
+  border: none;
 }
 
 .pintar{
@@ -97,4 +98,12 @@ body {
   background-color: rgb(231, 153, 255);
   background-image: url(/src/restart.png);
   border: 0px;
+}
+
+.div{
+  height: 50px;
+}
+
+.modo{
+  margin: 1% 0;
 }
