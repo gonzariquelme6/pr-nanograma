@@ -48,6 +48,8 @@ check([],[X|_Xs],0):-X=="#".
 check([],[X|Xs],0):- X\=="#", memberchk("#",Xs).
 %si se vacian las dos listas devuelvo 1
 check([],[],1).
+%si se vacian las pistas y no tengo mas # devuelvo 1
+check([],[X|Xs],1):- X\=="#", not(memberchk("#",Xs)).
 
 %CR1
 %si tengo pistas y la lista no empieza con #, avanzo en la lista
@@ -90,7 +92,7 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Fil
 	% En caso contrario (;)
 	% NewRow es el resultado de reemplazar lo que se que haya (_Cell) en la posición ColN de Row por Conenido.	 
 	
-	(replace(Cell, ColN, "_" , Row, NewRow),
+	(replace(Cell, ColN, _ , Row, NewRow),
 	Cell == Contenido;
 	replace(_Cell, ColN, Contenido, Row, NewRow)),
     
