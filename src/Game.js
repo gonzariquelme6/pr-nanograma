@@ -75,7 +75,6 @@ class Game extends React.Component {
     //llamamos al metodo put de prolog y usamos su respuesta para actualizar las pistas correctas
     const queryS = `put("${this.state.current_mode}", [${i}, ${j}], ${filas}, ${columnas}, ${squaresS}, GrillaRes, FilaSat, ColSat)`;
     
-    console.log(queryS);
     this.setState({
       waiting: true
     });
